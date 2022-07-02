@@ -5,7 +5,6 @@ This code prints all the drawings in model space. Drawings are clustered based o
 ## Enabling VBA in autocad
 * Download the VBA enabler for your autocad version from https://knowledge.autodesk.com/support/autocad/troubleshooting/caas/downloads/content/download-the-microsoft-vba-module-for-autocad.html
 * Then in the autocad inside the "Manage" tab click on the "Visual Basic Editor" inside "Applications"
-* Under File>Import, import the .cls file
 
 ## Installing inkscape
 * Download and install inkscape 1.2 from https://inkscape.org/release/1.2/windows/ And remember to check the "Add to path" checkbox during the end of installation
@@ -14,6 +13,6 @@ This code prints all the drawings in model space. Drawings are clustered based o
 * Download and install python from https://www.python.org/downloads/  Again make sure the "Add to path" check box is checked during the end of installation.
 
 ## Copying required files
-* Copy the .py file inside the folder where your output pdfs will be kept. This same folder will later be the location to be provided when the macro is run.
+* Copy the "rem_word.py" file inside the folder where your output pdfs will be kept. This same folder will later be the location to be provided when the macro is run. Copy the "Acad.lsp" and "printer.dvb" file inside the autocad installed directory.
 
 
