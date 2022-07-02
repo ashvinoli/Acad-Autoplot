@@ -69,19 +69,22 @@ Sub Print_me()
     
     
   
-    
+    Dim item As Variant
     'Get bounding box for each drawing
     While ThisDrawing.ModelSpace.Count > 0
-        ThisDrawing.ModelSpace.Item(0).GetBoundingBox minP, maxP
+        ThisDrawing.ModelSpace.item(0).GetBoundingBox minP, maxP
         minP(0) = minP(0) - padding
         minP(1) = minP(1) - padding
         maxP(0) = maxP(0) + padding
         maxP(1) = maxP(1) + padding
         'On Error Resume Next
         With ThisDrawing
-            If ThisDrawing.SelectionSets.Count > 0 Then
-                .SelectionSets("Temp").Delete
-            End If
+            For Each item In .SelectionSets
+                If item.Name = "Temp" Then
+                    .SelectionSets("Temp").Delete
+                    Exit For
+                End If
+            Next
             Set My_Set = .SelectionSets.Add("Temp")
             My_Set.Select acSelectionSetCrossing, minP, maxP
             next_count = My_Set.Count
@@ -89,7 +92,7 @@ Sub Print_me()
             Do
                 prev_count = next_count
                 'MsgBox prev_count
-                My_Set.Item(0).GetBoundingBox minP, maxP
+                My_Set.item(0).GetBoundingBox minP, maxP
                 MinX = minP(0)
                 MaxX = maxP(0)
                 MinY = minP(1)
@@ -123,8 +126,8 @@ Sub Print_me()
             
         End With
     Wend
-    Call Call_another(location_save)
-    MsgBox "Congratulations all the drawings have been successfully plotted, converted to jpg and cropped", vbInformation
+    Call Call_another(location_save, filename)
+    MsgBox "Congratulations all the drawings have been successfully plotted, converted to svg and png format!", vbInformation
 End Sub
 
 Sub Plot_Files_arg(p1() As Double, p2() As Double, counter As Integer, filename As String, location_save As String)
@@ -165,7 +168,7 @@ Sub Plot_Files_arg(p1() As Double, p2() As Double, counter As Integer, filename 
     
 End Sub
 
-Sub Call_another(location_save As String)
+Sub Call_another(location_save As String, filename As String)
     Dim wsh As Object
     Set wsh = VBA.CreateObject("WScript.Shell")
     Dim waitOnReturn As Boolean: waitOnReturn = True
@@ -178,7 +181,7 @@ Sub Call_another(location_save As String)
     ' /c switch tells to exit the cmd after code completion
     ' /k makes the cmd wait even after the completion of the code
    
-    wsh.Run "cmd /c python " & location_save & "rem_work.py", windowStyle, waitOnReturn
+    wsh.Run "cmd /c python " & location_save & "rem_work.py " & filename, windowStyle, waitOnReturn
 End Sub
 
 Sub FindingPaperSizes()
@@ -188,7 +191,7 @@ Sub FindingPaperSizes()
      'PlotConfig.CanonicalMediaName =
     PltConfigs.Add "PDF", False
   
-    Set PlotConfig = PltConfigs.Item("PDF")
+    Set PlotConfig = PltConfigs.item("PDF")
     PlotConfig.ConfigName = "DWG To PDF.pc3"
     papersize = ""
     Dim x As Variant
@@ -197,6 +200,8 @@ Sub FindingPaperSizes()
     Next i
     MsgBox papersize
 End Sub
+
+
 
 
 
