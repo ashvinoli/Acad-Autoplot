@@ -2,21 +2,20 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "ThisDrawing"
+Attribute VB_Name = "ThisDrawing1"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
-'Do not forget to make the NEW configuration befor running this code
-'And set ltscale to 5
 ' Prevent files from opening by unchecking the open in viewer check box in PDF to pc3 file
 ' Very important:
+' Setting 'Backgroundplot' to zero is important
 ' If autocad cann't execute certain lines in any way it will return the control to the main calling program when on error resume next is turned on
 ' ThisDrawing.Plot.PlotToFile ("D:\Arbind_Drawing\" + filename + Str(counter))  This line always returned back to original program without
 ' executing of the plot command because there was no D drive in my laptop and no arbind_drawing folder. When I corrected it to
 ' ThisDrawing.Plot.PlotToFile ("E:\Autocad_Output\" + filename + Str(counter)), everything seemed to work all right
 ' And sometimes the program runs into infinite loops. This is because, the same window containing no drawings is fed back to the
-' program which again repeats. The drawing count is never zero. to prevent this copy all the drawings to new drawing which has the
+' program which again repeats. The drawing count is never zero. To prevent this copy all the drawings to new drawing which has the
 ' same settings as your original one, or else a lot of things will change. After you copy the drawings to new sheet run the macro.
 
 Sub Print_me()
@@ -56,8 +55,6 @@ Sub Print_me()
     prev_count = 0
     file_count = 0
     
-    
-    
     'Set layout properties
     With ThisDrawing.ModelSpace.Layout
         'Load plot configurations from "PDF" that I had just created above. "New" stays with the drawing if saved and cannot be saved.
@@ -78,7 +75,7 @@ Sub Print_me()
     'Get bounding box for each drawing
     While ThisDrawing.ModelSpace.Count > 0
         ThisDrawing.ModelSpace.Item(0).GetBoundingBox minP, maxP
-         minP(0) = minP(0) - padding
+        minP(0) = minP(0) - padding
         minP(1) = minP(1) - padding
         maxP(0) = maxP(0) + padding
         maxP(1) = maxP(1) + padding
@@ -98,7 +95,6 @@ Sub Print_me()
                 MinY = minP(1)
                 MaxY = maxP(1)
                 
-            
                 For Each objects In My_Set
                     objects.GetBoundingBox minP, maxP
                     If maxP(0) > MaxX Then MaxX = maxP(0)
@@ -128,7 +124,7 @@ Sub Print_me()
         End With
     Wend
     'Call Call_another(location_save)
-    MsgBox "Congratulations all the drawings have been successfully plotted, converted to jpg and cropped"
+    MsgBox "Congratulations all the drawings have been successfully plotted, converted to jpg and cropped", vbInformation
 End Sub
 
 Sub Plot_Files_arg(p1() As Double, p2() As Double, counter As Integer, filename As String, location_save As String)
