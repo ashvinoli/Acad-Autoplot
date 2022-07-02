@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # About
 This code prints all the drawings in model space. Drawings are clustered based on the provided minimum distance to separate two nearby drawings. Each drawing is plotted in A4 size paper as pdf, then exported to svg and png format. The sole aim of this code is to export vector graphics from autocad to word so that the drawings are not distorted, so scale in the drawing is given no importance.
 
@@ -12,3 +13,9 @@ This code prints all the drawings in model space. Drawings are clustered based o
 
 ## Install python
 * Download and install python. Again make sure the "Add to path" check box is checked during the end of installation.
+=======
+*About
+This code prints all the drawings in model space. Drawings are clustered based on the provided minimum distance to separate two nearby drawings. Each drawing is plotted in A4 size paper as pdf, then exported to svg and png format. The sole aim of this code is to export vector graphics from autocad to word so that the drawings are not distorted.
+
+*How to use
+>>>>>>> 2b8cce41bd7df6ac322e4d501dd899b6910c5388
