@@ -11,7 +11,7 @@ Attribute VB_Exposed = True
 ' Very important:
 ' Setting 'Backgroundplot' to zero is important
 ' If autocad cann't execute certain lines in any way it will return the control to the main calling program when on error resume next is turned on
-' ThisDrawing.Plot.PlotToFile ("D:\Arbind_Drawing\" + filename + Str(counter))  This line always returned back to original program without
+' ThisDrawing.Plot.PlotToFile ("D:\Folder_location\" + filename + Str(counter))  This line always returned back to original program without
 ' executing of the plot command because there was no D drive in my laptop and no arbind_drawing folder. When I corrected it to
 ' ThisDrawing.Plot.PlotToFile ("E:\Autocad_Output\" + filename + Str(counter)), everything seemed to work all right
 ' And sometimes the program runs into infinite loops. This is because, the same window containing no drawings is fed back to the
