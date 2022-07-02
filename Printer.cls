@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "ThisDrawing1"
+Attribute VB_Name = "ThisDrawing"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -17,6 +17,8 @@ Attribute VB_Exposed = True
 ' And sometimes the program runs into infinite loops. This is because, the same window containing no drawings is fed back to the
 ' program which again repeats. The drawing count is never zero. To prevent this copy all the drawings to new drawing which has the
 ' same settings as your original one, or else a lot of things will change. After you copy the drawings to new sheet run the macro.
+' The order of assignment for values also matter. For example in the layout if you set the plottype to acwindow before setting window limits
+' the value will be invalid for the opposite seems to work.
 
 Sub Print_me()
     Dim minP As Variant
@@ -40,10 +42,19 @@ Sub Print_me()
     Dim padding As Double
     Dim filename As String
     Dim location_save As String
+
+    If ThisDrawing.ActiveSpace = acPaperSpace Then
+      ThisDrawing.MSpace = True
+      ThisDrawing.ActiveSpace = acModelSpace
+    End If
     
     location_save = InputBox("Where do you want to save the pdfs?", "Location", "E:\Autocad_Output\")
+    'location_save = "E:\Autocad_Output\"
+
     padding = ThisDrawing.Utility.GetDistance(, "Enter or draw approx half the distance between two distinct drawings. If confused enter 0")
+    'padding = 0
     filename = InputBox("The name of your drawings should start with?") + "-"
+    'filename = "x" + "-"
     ThisDrawing.Application.ZoomExtents 'WIthout this line the user had to manually zoom extent before running the code
     ThisDrawing.SetVariable "LTSCALE", 5 'Ltscale adjusted to that dashed lines would remain dashed
     ThisDrawing.SetVariable "BACKGROUNDPLOT", 0 'Let autocad print each pdf
@@ -55,22 +66,9 @@ Sub Print_me()
     prev_count = 0
     file_count = 0
     
-    'Set layout properties
-    With ThisDrawing.ModelSpace.Layout
-        'Load plot configurations from "PDF" that I had just created above. "New" stays with the drawing if saved and cannot be saved.
-        .ConfigName = "DWG To PDF.pc3"
-        .StandardScale = acScaleToFit
-        .CanonicalMediaName = .GetCanonicalMediaNames(16)
-        .PlotType = acWindow
-        .CenterPlot = True
-        'You can select the plot style table here
-        .StyleSheet = "Monochrome.ctb"
-        'Specifies whether or not to plot using the plot styles
-        .PlotWithPlotStyles = True
-         'Updates the plot
-        .RefreshPlotDeviceInfo
-    End With
     
+    
+  
     
     'Get bounding box for each drawing
     While ThisDrawing.ModelSpace.Count > 0
@@ -81,7 +79,9 @@ Sub Print_me()
         maxP(1) = maxP(1) + padding
         'On Error Resume Next
         With ThisDrawing
-            .SelectionSets("Temp").Delete
+            If ThisDrawing.SelectionSets.Count > 0 Then
+                .SelectionSets("Temp").Delete
+            End If
             Set My_Set = .SelectionSets.Add("Temp")
             My_Set.Select acSelectionSetCrossing, minP, maxP
             next_count = My_Set.Count
@@ -123,7 +123,7 @@ Sub Print_me()
             
         End With
     Wend
-    'Call Call_another(location_save)
+    Call Call_another(location_save)
     MsgBox "Congratulations all the drawings have been successfully plotted, converted to jpg and cropped", vbInformation
 End Sub
 
@@ -133,22 +133,34 @@ Sub Plot_Files_arg(p1() As Double, p2() As Double, counter As Integer, filename 
     Dim URwindow(0 To 1) As Double
     Dim result As Boolean
     Dim PltObj As AcadPlot
-    Dim BackPlot As Variant
     
     LLwindow(0) = p1(0)
     LLwindow(1) = p1(1)
     URwindow(0) = p2(0)
     URwindow(1) = p2(1)
 
-    If ThisDrawing.ActiveSpace = acPaperSpace Then
-      ThisDrawing.MSpace = True
-      ThisDrawing.ActiveSpace = acModelSpace
-    End If
     
     Set PltObj = ThisDrawing.Plot
    
-    ThisDrawing.ModelSpace.Layout.SetWindowToPlot LLwindow, URwindow 'Lower left and upper right coordinates
-
+    'Set layout properties
+    With ThisDrawing.ModelSpace.Layout
+        .ConfigName = "DWG To PDF.pc3"
+        .StandardScale = acScaleToFit
+        .CanonicalMediaName = .GetCanonicalMediaNames(16)
+         'Updates the plot
+        .RefreshPlotDeviceInfo
+        'You can select the plot style table here
+        .StyleSheet = "Monochrome.ctb"
+        'Specifies whether or not to plot using the plot styles
+        .PlotWithPlotStyles = True
+        .CenterPlot = True
+        .RefreshPlotDeviceInfo
+        .SetWindowToPlot LLwindow, URwindow 'Lower left and upper right coordinates
+        'MsgBox acWindow
+        .PlotType = acWindow
+    End With
+    
+    
     result = PltObj.PlotToFile(location_save + filename + Str(counter))
     
 End Sub
@@ -166,10 +178,7 @@ Sub Call_another(location_save As String)
     ' /c switch tells to exit the cmd after code completion
     ' /k makes the cmd wait even after the completion of the code
    
-    wsh.Run "cmd /c python " & location_save & "call_pdf2jpg.py", windowStyle, waitOnReturn
-    wsh.Run "cmd /c python " & location_save & "call_autocrop.py", windowStyle, waitOnReturn
-    wsh.Run "cmd /c python " & location_save & "Pdf2svg.py", windowStyle, waitOnReturn
-    wsh.Run "cmd /c python " & location_save & "move_all.py", windowStyle, waitOnReturn
+    wsh.Run "cmd /c python " & location_save & "rem_work.py", windowStyle, waitOnReturn
 End Sub
 
 Sub FindingPaperSizes()
@@ -179,7 +188,8 @@ Sub FindingPaperSizes()
      'PlotConfig.CanonicalMediaName =
     PltConfigs.Add "PDF", False
   
-     Set PlotConfig = PltConfigs.Item("PDF")
+    Set PlotConfig = PltConfigs.Item("PDF")
+    PlotConfig.ConfigName = "DWG To PDF.pc3"
     papersize = ""
     Dim x As Variant
     For i = 0 To UBound(PlotConfig.GetCanonicalMediaNames)
@@ -187,5 +197,6 @@ Sub FindingPaperSizes()
     Next i
     MsgBox papersize
 End Sub
+
 
 
