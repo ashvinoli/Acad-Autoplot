@@ -77,6 +77,21 @@ Sub Print_me()
             End If
             counter = counter + 1
         Wend
+        
+       
+        While TypeName(ThisDrawing.ModelSpace.item(counter)) = "IAcadMText"  'IAcadMText might contain empty string but still give bounding box which won't be crossed so selection set becomes empty
+            'If model space contains only IAcadDimangular object then exit the loop all together
+            If ThisDrawing.ModelSpace.item(counter).TextString = "" Then
+                If ThisDrawing.ModelSpace.Count = 1 Then
+                    Exit Do
+                End If
+                counter = counter + 1
+            Else
+             GoTo cont
+            End If
+        Wend
+cont:
+        
         ThisDrawing.ModelSpace.item(counter).GetBoundingBox minP, maxP
         counter = 0
         minP(0) = minP(0) - padding
@@ -98,6 +113,9 @@ Sub Print_me()
             Do
                 prev_count = next_count
                 'MsgBox prev_count
+                If My_Set.Count = 0 Then
+                    Exit Do
+                End If
                 My_Set.item(0).GetBoundingBox minP, maxP
                 MinX = minP(0)
                 MaxX = maxP(0)
