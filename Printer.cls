@@ -66,13 +66,19 @@ Sub Print_me()
     prev_count = 0
     file_count = 0
     
-    
-    
-  
     Dim item As Variant
+    counter = 0
     'Get bounding box for each drawing
-    While ThisDrawing.ModelSpace.Count > 0
-        ThisDrawing.ModelSpace.item(0).GetBoundingBox minP, maxP
+    Do While ThisDrawing.ModelSpace.Count > 0
+        While TypeName(ThisDrawing.ModelSpace.item(counter)) = "IAcadDimAngular" 'IAcadDimangular objects provide null extents for getbounding box
+            'If model space contains only IAcadDimangular object then exit the loop all together
+            If ThisDrawing.ModelSpace.Count = 1 Then
+                Exit Do
+            End If
+            counter = counter + 1
+        Wend
+        ThisDrawing.ModelSpace.item(counter).GetBoundingBox minP, maxP
+        counter = 0
         minP(0) = minP(0) - padding
         minP(1) = minP(1) - padding
         maxP(0) = maxP(0) + padding
@@ -125,7 +131,7 @@ Sub Print_me()
             My_Set.Erase
             
         End With
-    Wend
+    Loop
     Call Call_another(location_save, filename)
     MsgBox "Congratulations all the drawings have been successfully plotted, converted to svg and png format!", vbInformation
 End Sub
