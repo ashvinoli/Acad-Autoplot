@@ -16,7 +16,7 @@ This code prints all the drawings in model space. Drawings are clustered based o
 * Copy the "rem_word.py" file inside the folder where your output pdfs will be kept. This same folder will later be the location to be provided when the macro is run. Copy the "Acad.lsp" and "printer.dvb" file inside the autocad installed directory for example "C:\Program Files\Autodesk\AutoCAD 2016"
 
 ## Running the macro
-* Before running the macro just copy all the drawings from your origin sheet to new drawing tab in autocad because ll the drawings will be deleted from you modelspace after printing. You can simply press ctrl+z i.e. undo but still better to copy the drawings to a new drawing tab in autocad.
+* Before running the macro just copy all the drawings from your origin sheet to new drawing tab in autocad because all the drawings will be deleted from you modelspace after printing. You can simply press ctrl+z i.e. undo but still better to copy the drawings to a new drawing tab in autocad.
 * Run the macro from "Run VBA Macro" inside the "Manage Tab" of autocad. Select the macro named "ThisDrawing.Print_Me". Then you will first be prompted to insert the location of saving directory. Input it. After you will be asked to draw a line that denotes the tentative distance that separates each drawing. This value is just an approx. Finally you will be asked to enter the starting character. This character will later be used to convert the drawings to svg and png. Only the pdfs starting with that character will be converted to save time.
 
 

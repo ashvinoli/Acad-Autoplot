@@ -202,15 +202,17 @@ Sub Call_another(location_save As String, filename As String)
     Set wsh = VBA.CreateObject("WScript.Shell")
     Dim waitOnReturn As Boolean: waitOnReturn = True
     Dim windowStyle As Integer: windowStyle = 1
-
+    Dim run_str As String
     ' Call another program
     ' Shell() did the job but it does it asynchronously
     ' wscript.shell object waits until program terminates as below
     ' But be careful not to run python directly but run it from the cmd
     ' /c switch tells to exit the cmd after code completion
     ' /k makes the cmd wait even after the completion of the code
-   
-    wsh.Run "cmd /c python " & location_save & "rem_work.py " & filename, windowStyle, waitOnReturn
+    location_save = Chr(34) & location_save & "\rem_work.py" & Chr(34) & " " & filename
+    run_str = "cmd /k python " & location_save
+    'MsgBox run_str
+    wsh.Run run_str, windowStyle, waitOnReturn
 End Sub
 
 Sub FindingPaperSizes()
@@ -229,8 +231,6 @@ Sub FindingPaperSizes()
     Next i
     MsgBox papersize
 End Sub
-
-
 
 
 
