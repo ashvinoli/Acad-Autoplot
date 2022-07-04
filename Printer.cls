@@ -49,6 +49,11 @@ Sub Print_me()
     End If
     
     location_save = InputBox("Where do you want to save the pdfs?", "Location", "E:\Autocad_Output\")
+    
+    If Right(location_save, 1) <> "\" Then
+        location_save = location_save & "\"
+    End If
+    
     'location_save = "E:\Autocad_Output\"
 
     padding = ThisDrawing.Utility.GetDistance(, "Enter or draw approx half the distance between two distinct drawings. If confused enter 0")
@@ -209,7 +214,7 @@ Sub Call_another(location_save As String, filename As String)
     ' But be careful not to run python directly but run it from the cmd
     ' /c switch tells to exit the cmd after code completion
     ' /k makes the cmd wait even after the completion of the code
-    location_save = Chr(34) & location_save & "\rem_work.py" & Chr(34) & " " & filename
+    location_save = Chr(34) & location_save & "rem_work.py" & Chr(34) & " " & filename
     run_str = "cmd /k python " & location_save
     'MsgBox run_str
     wsh.Run run_str, windowStyle, waitOnReturn
