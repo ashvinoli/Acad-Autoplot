@@ -18,4 +18,7 @@ This code prints all the drawings in model space. Drawings are clustered based o
 ## Running the macro
 * Run the macro from "Run VBA Macro" inside the "Manage Tab" of autocad. Select the macro named "ThisDrawing.Print_Me". Then you will first be prompted to insert the location of saving directory. Input it. After you will be asked to draw a line that denotes the tentative distance that separates each drawing. This value is just an approx. Finally you will be asked to enter the starting character. This character will later be used to convert the drawings to svg and png. Only the pdfs starting with that character will be converted to save time.
 
+## Issues
+Code should work for autocad 2016 and above. If you have any issues feel free to contact me.
+
 
