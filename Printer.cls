@@ -7,19 +7,6 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
-' Prevent files from opening by unchecking the open in viewer check box in PDF to pc3 file
-' Very important:
-' Setting 'Backgroundplot' to zero is important
-' If autocad cann't execute certain lines in any way it will return the control to the main calling program when on error resume next is turned on
-' ThisDrawing.Plot.PlotToFile ("D:\Folder_location\" + filename + Str(counter))  This line always returned back to original program without
-' executing of the plot command because there was no D drive in my laptop and no arbind_drawing folder. When I corrected it to
-' ThisDrawing.Plot.PlotToFile ("E:\Autocad_Output\" + filename + Str(counter)), everything seemed to work all right
-' And sometimes the program runs into infinite loops. This is because, the same window containing no drawings is fed back to the
-' program which again repeats. The drawing count is never zero. To prevent this copy all the drawings to new drawing which has the
-' same settings as your original one, or else a lot of things will change. After you copy the drawings to new sheet run the macro.
-' The order of assignment for values also matter. For example in the layout if you set the plottype to acwindow before setting window limits
-' the value will be invalid for the opposite seems to work.
-
 Sub Print_me()
     Dim minP As Variant
     Dim maxP As Variant
@@ -56,7 +43,7 @@ Sub Print_me()
     
     'location_save = "E:\Autocad_Output\"
 
-    padding = ThisDrawing.Utility.GetDistance(, "Enter or draw approx half the distance between two distinct drawings. If confused enter 0")
+    padding = ThisDrawing.Utility.GetDistance(, "Max separation between objects to consider them into one drawing?. If confused enter 0")
     'padding = 0
     filename = InputBox("The name of your drawings should start with?") + "-"
     'filename = "x" + "-"
@@ -73,6 +60,7 @@ Sub Print_me()
     
     Dim item As Variant
     counter = 0
+    
     'Get bounding box for each drawing
     Do While ThisDrawing.ModelSpace.Count > 0
 
