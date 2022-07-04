@@ -82,7 +82,8 @@ handle_error:
                 If ThisDrawing.ModelSpace.Count = 1 Then 'If the only element if the one which has null bounds exit loop
                     Exit Do
                 End If
-                counter = counter + 1
+                ThisDrawing.ModelSpace.item(counter).Delete
+                'counter = counter  + 1
                 Resume starts_here 'Instead of "goto starts_here" "resume starts_here" is necessary because goto prevents error to be raised the second time, as vba thinks that the error was within error
             Case Else
                 MsgBox "Error " & Err.Number & " occured!"
