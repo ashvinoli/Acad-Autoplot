@@ -70,30 +70,25 @@ Sub Print_me()
     counter = 0
     'Get bounding box for each drawing
     Do While ThisDrawing.ModelSpace.Count > 0
-        While TypeName(ThisDrawing.ModelSpace.item(counter)) = "IAcadDimAngular" 'IAcadDimangular objects provide null extents for getbounding box
-            'If model space contains only IAcadDimangular object then exit the loop all together
-            If ThisDrawing.ModelSpace.Count = 1 Then
-                Exit Do
-            End If
-            counter = counter + 1
-        Wend
+
+starts_here:
+        On Error GoTo handle_error 'Trying to handle null extents error
+        ThisDrawing.ModelSpace.item(counter).GetBoundingBox minP, maxP
+        GoTo resume_task_normally
         
-       
-        While TypeName(ThisDrawing.ModelSpace.item(counter)) = "IAcadMText"  'IAcadMText might contain empty string but still give bounding box which won't be crossed so selection set becomes empty
-            'If model space contains only IAcadDimangular object then exit the loop all together
-            If ThisDrawing.ModelSpace.item(counter).TextString = "" Then
-                If ThisDrawing.ModelSpace.Count = 1 Then
+handle_error:
+        Select Case Err.Number
+            Case -2145386308 'Null extents error
+                If ThisDrawing.ModelSpace.Count = 1 Then 'If the only element if the one which has null bounds exit loop
                     Exit Do
                 End If
                 counter = counter + 1
-            Else
-             GoTo cont
-            End If
-        Wend
-cont:
+                Resume starts_here 'Instead of "goto starts_here" "resume starts_here" is necessary because goto prevents error to be raised the second time, as vba thinks that the error was within error
+            Case Else
+                MsgBox "Error " & Err.Number & " occured!"
+        End Select
         
-        ThisDrawing.ModelSpace.item(counter).GetBoundingBox minP, maxP
-        counter = 0
+resume_task_normally:
         minP(0) = minP(0) - padding
         minP(1) = minP(1) - padding
         maxP(0) = maxP(0) + padding
@@ -108,12 +103,20 @@ cont:
             Next
             Set My_Set = .SelectionSets.Add("Temp")
             My_Set.Select acSelectionSetCrossing, minP, maxP
+            'My_Set.Select acSelectionSetWindow, minP, maxP
             next_count = My_Set.Count
                 
             Do
                 prev_count = next_count
                 'MsgBox prev_count
                 If My_Set.Count = 0 Then
+                    'If any autocad object gives the bounding box values,
+                    'there at least has to be the same object inside the bounding box,
+                    'but in somecases like empty strings the strings
+                    'themselves won't be selected inside the bounding box,
+                    'so we have to erase them or else the program will run in infinite loops, as the same empty string will the the
+                    'object providing bounding box and since it won't be selected it won't be erased so we have to erase it manually
+                    ThisDrawing.ModelSpace.item(counter).Delete '
                     Exit Do
                 End If
                 My_Set.item(0).GetBoundingBox minP, maxP
@@ -149,6 +152,7 @@ cont:
             My_Set.Erase
             
         End With
+        counter = 0
     Loop
     Call Call_another(location_save, filename)
     MsgBox "Congratulations all the drawings have been successfully plotted, converted to svg and png format!", vbInformation
